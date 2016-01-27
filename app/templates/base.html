@@ -1,0 +1,14 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} - Fire Forums</title>
+    {% else %}
+    <title>Welcome to Fire Forums</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>Fire Forums: <a href="/index">Home</a></div>
+    <hr>
+    {% block content %}{% endblock %}
+  </body>
+</html>
