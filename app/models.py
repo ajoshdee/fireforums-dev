@@ -6,10 +6,22 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     social_id = db.Column(db.String(64), nullable=False, unique=True)
-    nickname = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), nullable=True)
+    nickname = db.Column(db.String(64), nullable=False, unique=True)
+    email = db.Column(db.String(64), nullable=True, unique=True)
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
 
     def avatar(self, size):
         return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % (md5(self.email.encode('utf-8')).hexdigest(), size)
 
+    def __repr__(self):
+        return '<User %r>' % (self.nickname)
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(140))
+    date_created = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<Post %r>' % (self.date_created)
