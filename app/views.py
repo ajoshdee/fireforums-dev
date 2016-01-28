@@ -7,6 +7,7 @@ from .models import User, Post
 from .forms import EditForm, PostForm
 from instance.config import POSTS_PER_PAGE
 
+#test
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
