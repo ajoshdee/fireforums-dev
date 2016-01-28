@@ -7,7 +7,12 @@
     {% endif %}
   </head>
   <body>
-    <div>Fire Forums: <a href="/index">Home</a></div>
+    <div>Fire Forums:
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if current_user.is_authenticated %}
+        | <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+    </div>
     <hr>
     {% block content %}{% endblock %}
   </body>
