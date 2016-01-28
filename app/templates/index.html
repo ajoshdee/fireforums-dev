@@ -1,8 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-        {% for message in get_flashed_messages() %}
-            <p><b>Error</b>: {{ message }}</p>
-        {% endfor %}
 
         <h1>Hi, {{ current_user.nickname }}!</h1>
         
