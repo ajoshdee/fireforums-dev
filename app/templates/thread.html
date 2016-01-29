@@ -1,0 +1,33 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+
+        <h1>{{ thread.title }}</h1>
+		<form action="" method="post" name="post">
+      		{{ form.hidden_tag() }}
+      	<table>
+        	<tr>
+             	<td>Comment:</td>
+              	<td>{{ form.comment(size=30, maxlength=140) }}</td>
+              	<td>
+              	{% for error in form.comment.errors %}
+              	<span style="color: red;">[{{ error }}]</span><br>
+              	{% endfor %}
+              	</td>
+          	</tr>
+          	<tr>
+              	<td></td>
+              	<td><input type="submit" value="Post!"></td>
+              	<td></td>
+          	</tr>
+      	</table>
+  	</form>
+  	{% for comment in comments.items %}
+  	<p>
+    	{% include 'comment.html' %}
+  	</p>
+  	{% endfor %}
+  	{% if comments.has_prev %}<a href="{{ url_for('comments', title=thread.title , page=comments.prev_num) }}">&lt;&lt; Back</a>{% else %}&lt;&lt; Back{% endif %} | 
+	{% if comments.has_next %}<a href="{{ url_for('comments', title=thread.title, page=comments.next_num) }}">Next &gt;&gt;</a>{% else %}Next &gt;&gt;{% endif %}
+{% endblock %}

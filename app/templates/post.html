@@ -1,5 +1,5 @@
 <table>
     <tr valign="top">
-        <td><img src="{{ post.author.avatar(50) }}"></td><td><i>{{ post.author.nickname }} says:</i><br>{{ post.title }}</td>
+        <td><img src="{{ post.author.avatar(50) }}"></td><td><i>{{ post.author.nickname }} says:</i><br>{{ post.title }}<br><a href="{{ url_for('comments', title=post.title) }}">Comments</a></td>
     </tr>
 </table>

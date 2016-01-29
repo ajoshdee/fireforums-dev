@@ -8,3 +8,6 @@ class EditForm(Form):
 
 class PostForm(Form):
     post = StringField('post', validators=[DataRequired()])
+
+class CommentForm(Form):
+    comment = StringField('body', validators=[DataRequired()])

@@ -3,11 +3,10 @@ from app import app, lm, db
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .facebook import OAuthSignIn
 from datetime import datetime
-from .models import User, Post
-from .forms import EditForm, PostForm
+from .models import User, Post, Comment
+from .forms import EditForm, PostForm, CommentForm
 from instance.config import POSTS_PER_PAGE
 
-#test
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
@@ -46,9 +45,36 @@ def user(nickname, page=1):
     if user == None:
         flash('User %s not found.' % nickname)
         return redirect(url_for('index'))
+
     posts = user.posts.order_by(Post.date_created.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('user.html',
                            user=user, posts=posts)
+
+@app.route('/comments/<title>', methods=['GET', 'POST'])
+@app.route('/comments/<title>/<int:page>', methods=['GET', 'POST'])
+@login_required
+def comments(title, page=1):
+    thread = Post.query.filter_by(title=title).first()
+    form = CommentForm()
+
+    if thread == None:
+        flash('Thread %s not found.' % title)
+        return redirect(url_for('index'))
+
+
+    if form.validate_on_submit():
+        comment = Comment(body=form.comment.data, date_created=datetime.utcnow(), owner=g.user, poster=thread)
+        db.session.add(comment)
+        db.session.commit()
+        flash('Your post is now live!')
+        return redirect(url_for('comments', title=title))
+
+    comments = thread.comments.paginate(page, POSTS_PER_PAGE, False)
+    return render_template('thread.html',
+                            title=thread.title,
+                            thread=thread,
+                            form = form,
+                            comments=comments)
 
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required

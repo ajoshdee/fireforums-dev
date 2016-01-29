@@ -9,6 +9,7 @@ class User(UserMixin, db.Model):
     nickname = db.Column(db.String(64), nullable=False, unique=True)
     email = db.Column(db.String(64), nullable=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', backref='owner', lazy='dynamic')
     about_me = db.Column(db.String(140))
 
     def avatar(self, size):
@@ -21,7 +22,18 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140))
     date_created = db.Column(db.DateTime)
+    comments = db.relationship('Comment', backref='poster', lazy='dynamic')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
         return '<Post %r>' % (self.date_created)
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(140))
+    date_created = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    thread_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+
+    def __repr__(self):
+        return '<Comment %r>' % (self.date_created)
