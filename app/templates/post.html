@@ -1,5 +1,15 @@
 <table>
     <tr valign="top">
-        <td><img src="{{ post.author.avatar(50) }}"></td><td><i>{{ post.author.nickname }} says:</i><br>{{ post.title }}<br><a href="{{ url_for('comments', title=post.title) }}">Comments</a></td>
+        <td><img src="{{ post.author.avatar(70) }}"> <br>
+        	<a href="{{url_for('user', nickname=post.author.nickname)}}">{{ post.author.nickname }}</a>
+        </td>
+        <td>
+        	<p>{{ momentjs(post.date_created).fromNow() }}:
+        	</p> 
+        	<p><strong>{{ post.title }}</strong><br>
+        	<a href="{{ url_for('comments', title=post.title) }}">Comments</a>
+        	</p>
+        </td>
+
     </tr>
 </table>

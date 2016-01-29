@@ -1,5 +1,13 @@
 <table>
     <tr valign="top">
-        <td><img src="{{ comment.owner.avatar(50) }}"></td><td><i>{{ comment.owner.nickname }} says:</i><br>{{ comment.body }}</td>
+        <td><img src="{{ comment.owner.avatar(70) }}"> <br>
+        	<a href="{{url_for('user', nickname=comment.owner.nickname)}}">{{ comment.owner.nickname }}</a>
+        </td>
+        <td>
+        	<p>{{ momentjs(comment.date_created).fromNow() }}:
+        	</p> 
+        	<p><strong>{{ comment.body }}</strong>
+        	</p>
+        </td>
     </tr>
 </table>
