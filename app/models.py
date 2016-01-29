@@ -19,6 +19,7 @@ class User(UserMixin, db.Model):
         return '<User %r>' % (self.nickname)
 
 class Post(db.Model):
+    __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140))
     date_created = db.Column(db.DateTime)
