@@ -12,6 +12,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140))
     date_created = db.Column(db.DateTime)
+    vote_count = db.Column(db.Integer, default=0)
     comments = db.relationship('Comment', backref='poster', lazy='dynamic')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -27,6 +28,7 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='owner', lazy='dynamic')
     about_me = db.Column(db.String(140))
+    sort_prefs = db.Column(db.String(3), default='new')
     liked = db.relationship('Post',
                             secondary=upvotes,
                             primaryjoin=(upvotes.c.follower_id == id),

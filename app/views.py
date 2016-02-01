@@ -27,11 +27,30 @@ def index(page=1):
         db.session.commit()
         flash('Your post is now live!')
         return redirect(url_for('index'))
-    posts = Post.query.order_by(Post.date_created.desc()).paginate(page, POSTS_PER_PAGE, False)
+    if g.user.sort_prefs == 'new':
+        posts = Post.query.order_by(Post.date_created.desc()).paginate(page, POSTS_PER_PAGE, False)
+    else:
+        posts = Post.query.order_by(Post.vote_count.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('index.html', 
                             title='Home', 
                             form=form, 
                             posts=posts)
+
+@app.route('/hot')
+def hot():
+    g.user.sort_prefs = 'hot'
+    db.session.add(g.user)
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('index'))
+
+@app.route('/new')
+def new():
+    g.user.sort_prefs = 'new'
+    db.session.add(g.user)
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('index'))
 
 @app.route('/login')
 def login():
@@ -137,6 +156,9 @@ def upvote(title):
         flash('Cannot upvote ' + title + '.')
         return redirect(url_for('index'))
     db.session.add(u)
+    
+    post.vote_count =  post.upvotes.count()
+    db.session.add(post)
     db.session.commit()
     flash('You have now upvoted ' + title + '!')
     return redirect(url_for('index'))
@@ -154,6 +176,9 @@ def downvote(title):
         flash('Cannot downvote ' + title + '.')
         return redirect(url_for('index'))
     db.session.add(u)
+
+    post.vote_count =  post.upvotes.count()
+    db.session.add(post)
     db.session.commit()
     flash('You have downvoted ' + title + '.')
     return redirect(url_for('index'))
