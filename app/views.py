@@ -124,6 +124,40 @@ def delete_comment(id):
     flash('Your comment has been deleted.')
     return redirect(url_for('comments', title=comment.poster.title))
 
+@app.route('/upvote/<title>')
+@login_required
+def upvote(title):
+    post = Post.query.filter_by(title=title).first()
+    if post is None:
+        flash('Post %s not found.' % title)
+        return redirect(url_for('index'))
+
+    u = g.user.upvote(post)
+    if u is None:
+        flash('Cannot upvote ' + title + '.')
+        return redirect(url_for('index'))
+    db.session.add(u)
+    db.session.commit()
+    flash('You have now upvoted ' + title + '!')
+    return redirect(url_for('index'))
+
+@app.route('/downvote/<title>')
+@login_required
+def downvote(title):
+    post = Post.query.filter_by(title=title).first()
+    if post is None:
+        flash('Post %s not found.' % title)
+        return redirect(url_for('index'))
+
+    u = g.user.downvote(post)
+    if u is None:
+        flash('Cannot downvote ' + title + '.')
+        return redirect(url_for('index'))
+    db.session.add(u)
+    db.session.commit()
+    flash('You have downvoted ' + title + '.')
+    return redirect(url_for('index'))
+
 @app.route('/logout')
 def logout():
     logout_user()

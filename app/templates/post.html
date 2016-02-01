@@ -1,5 +1,11 @@
 <table>
     <tr valign="top">
+        {{ post.upvotes.count() }}
+        {% if not g.user.is_liked(post) %}
+            <a href="{{ url_for('upvote', title=post.title) }}">Upvote</a>
+        {% else %}
+            <a href="{{ url_for('downvote', title=post.title) }}">Downvote</a>
+        {% endif %}
         <td><img src="{{ post.author.avatar(70) }}"> <br>
         	<a href="{{url_for('user', nickname=post.author.nickname)}}">{{ post.author.nickname }}</a>
         </td>
