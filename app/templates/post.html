@@ -1,3 +1,21 @@
+<style>
+.hidden{
+    display:none;
+}
+
+.unhidden{
+    display:block;
+}
+</style>
+<script type="text/javascript">
+    function unhide(divID, otherDivId) {
+    var item = document.getElementById(divID);
+    if (item) {
+            item.className=(item.className=='hidden')?'unhidden':'hidden';
+        }
+        document.getElementById(otherDivId).className = 'hidden';
+    }
+</script>
 <table>
     <tr valign="top">
         {{ post.upvotes.count() }}
@@ -17,6 +35,28 @@
         	</p>
         	{% if post.author.id == g.user.id %}
 			<div><a href="{{ url_for('delete_post', id=post.id) }}">{{ ('Delete') }}</a></div>
+            <div id="link"><a href="javascript:unhide('about', 'link')" class="button">{{ ('Edit') }}</a></div>
+            <div id="about" class="hidden">
+                <form action="{{ url_for('edit_post', id=post.id) }}" method="post" name="edit">
+                    {{ eform.hidden_tag() }}
+                    <table>
+                    <tr>
+                        <td>{{ eform.body(size=30, maxlength=140) }}</td>
+                        <td>
+                        {% for error in eform.body.errors %}
+                            <span style="color: red;">[{{ error }}]</span><br>
+                        {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                    
+                    <td><input type="submit" value="Save Changes"><input type="button" onclick="unhide('link', 'about') " value="Cancel"></td>
+                    <td></td>
+                    </tr>
+                    </table>
+                </form>
+            </div>
+            
 			{% endif %}
         </td>
 

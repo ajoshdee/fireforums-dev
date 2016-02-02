@@ -4,7 +4,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .facebook import OAuthSignIn
 from datetime import datetime
 from .models import User, Post, Comment
-from .forms import EditForm, PostForm, CommentForm
+from .forms import EditForm, PostForm, CommentForm, EditPostForm
 from instance.config import POSTS_PER_PAGE
 
 @lm.user_loader
@@ -20,9 +20,10 @@ def before_request():
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
 @login_required
 def index(page=1):
-    form = PostForm()
-    if form.validate_on_submit():
-        post = Post(title=form.post.data, date_created=datetime.utcnow(), author=g.user)
+    pform = PostForm()
+    eform = EditPostForm()
+    if pform.validate_on_submit():
+        post = Post(title=pform.post.data, date_created=datetime.utcnow(), author=g.user)
         db.session.add(post)
         db.session.commit()
         flash('Your post is now live!')
@@ -33,7 +34,8 @@ def index(page=1):
         posts = Post.query.order_by(Post.vote_count.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('index.html', 
                             title='Home', 
-                            form=form, 
+                            pform=pform,
+                            eform=eform, 
                             posts=posts)
 
 @app.route('/hot')
@@ -110,6 +112,42 @@ def edit():
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
     return render_template('edit.html', form=form)
+
+@app.route('/edit/post/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_post(id):
+    pform = PostForm()
+    eform = EditPostForm()
+    post = Post.query.get(id)
+    page = 1
+    if post is None:
+        flash('Post not found.')
+        return redirect(url_for('index'))
+    if post.author.id != g.user.id:
+        flash('You cannot delete this post.')
+        return redirect(url_for('index'))
+
+    if eform.validate_on_submit():
+        post.title = eform.body.data
+        db.session.add(post)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        print("success")
+        return redirect(url_for('index'))
+    else:
+        eform.body.data = post.title
+        print("error")
+
+    if g.user.sort_prefs == 'new':
+        posts = Post.query.order_by(Post.date_created.desc()).paginate(page, POSTS_PER_PAGE, False)
+    else:
+        posts = Post.query.order_by(Post.vote_count.desc()).paginate(page, POSTS_PER_PAGE, False)
+
+    return render_template('index.html', 
+                            title='Home', 
+                            pform=pform,
+                            eform=eform,
+                            posts=posts)
 
 @app.route('/delete/post/<int:id>')
 @login_required
