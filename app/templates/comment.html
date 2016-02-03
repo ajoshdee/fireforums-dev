@@ -9,7 +9,9 @@
         	<p><strong>{{ comment.body }}</strong>
         	</p>
         	{% if comment.owner.id == g.user.id %}
-			<div><a href="{{ url_for('delete_comment', id=comment.id) }}">{{ ('Delete') }}</a></div>
+			<div><form method="post" action="{{ url_for('delete_comment', id=comment.id) }}">
+            <button type="submit">Delete</button>
+            </form></div>
 			{% endif %}
         </td>
     </tr>

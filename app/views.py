@@ -106,7 +106,7 @@ def edit():
         form.about_me.data = g.user.about_me
     return render_template('edit.html', form=form)
 
-@app.route('/delete/post/<int:id>')
+@app.route('/delete/post/<int:id>', methods=['POST'])
 @login_required
 def delete_post(id):
     post = Post.query.get(id)
@@ -116,25 +116,25 @@ def delete_post(id):
     if post.author.id != g.user.id:
         flash('You cannot delete this post.')
         return redirect(url_for('index'))
-    save.delete(post)
+    delete(post)
     flash('Your post has been deleted.')
     return redirect(url_for('index'))
 
-@app.route('/delete/comment/<int:id>')
+@app.route('/delete/comment/<int:id>', methods=['POST'])
 @login_required
 def delete_comment(id):
     comment = Comment.query.get(id)
-    print(comment.poster.title)
-    print(dir(comment.poster))
+    title = comment.poster.title
+    
     if comment is None:
         flash('Comment not found.')
-        return redirect(url_for('comments', title=comment.poster.title))
+        return redirect(url_for('comments', title=title))
     if comment.owner.id != g.user.id:
         flash('You cannot delete this post.')
-        return redirect(url_for('comments', title=comment.poster.title))
+        return redirect(url_for('comments', title=title))
     delete(comment)
     flash('Your comment has been deleted.')
-    return redirect(url_for('comments', title=comment.poster.title))
+    return redirect(url_for('comments', title=title))
 
 @app.route('/upvote/<title>')
 @login_required
