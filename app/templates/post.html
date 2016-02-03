@@ -1,21 +1,3 @@
-<style>
-.hidden{
-    display:none;
-}
-
-.unhidden{
-    display:block;
-}
-</style>
-<script type="text/javascript">
-    function unhide(divID, otherDivId) {
-    var item = document.getElementById(divID);
-    if (item) {
-            item.className=(item.className=='hidden')?'unhidden':'hidden';
-        }
-        document.getElementById(otherDivId).className = 'hidden';
-    }
-</script>
 <table>
     <tr valign="top">
         {{ post.upvotes.count() }}
@@ -34,9 +16,12 @@
         	<a href="{{ url_for('comments', title=post.title) }}">Comments</a>
         	</p>
         	{% if post.author.id == g.user.id %}
-			<div><a href="{{ url_for('delete_post', id=post.id) }}">{{ ('Delete') }}</a></div>
-            <div id="link"><a href="javascript:unhide('{{ post.id }}', 'link')" class="button">{{ ('Edit') }}</a></div>
-            <div id="{{ post.id }}" class="hidden">
+			<div><form method="post" action="{{ url_for('delete_post', id=post.id) }}">
+            <button type="submit">Delete</button>
+            </form></div>
+            <div class=fcontainer>
+            <div id="link"><a href="#" class="unhide_button button">{{ ('Edit') }}</a></div>
+            <div class="about hidden">
                 <form action="{{ url_for('edit_post', id=post.id) }}" method="post" name="edit">
                     {{ eform.hidden_tag() }}
                     <table>
@@ -50,13 +35,13 @@
                     </tr>
                     <tr>
                     
-                    <td><input type="submit" value="Save Changes"><input type="button" onclick="unhide('link', '{{ post.id }}') " value="Cancel"></td>
+                    <td><input type="submit" value="Save Changes"><input type="button" class="unhide_button button" value="Cancel"></td>
                     <td></td>
                     </tr>
                     </table>
                 </form>
             </div>
-            
+            </div>
 			{% endif %}
         </td>
 

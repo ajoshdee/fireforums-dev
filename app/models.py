@@ -7,6 +7,14 @@ upvotes = db.Table('upvotes',
     db.Column('follower_id', db.Integer, db.ForeignKey('users.id'))
 )
 
+def save(model):
+    db.session.add(model)
+    db.session.commit()
+    
+def delete(model):
+    db.session.delete(model)
+    db.session.commit()
+
 class Post(db.Model):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True)

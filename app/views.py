@@ -3,7 +3,7 @@ from app import app, lm, db
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .facebook import OAuthSignIn
 from datetime import datetime
-from .models import User, Post, Comment
+from .models import User, Post, Comment, save, delete
 from .forms import EditForm, PostForm, CommentForm, EditPostForm
 from instance.config import POSTS_PER_PAGE
 
@@ -24,8 +24,7 @@ def index(page=1):
     eform = EditPostForm()
     if pform.validate_on_submit():
         post = Post(title=pform.post.data, date_created=datetime.utcnow(), author=g.user)
-        db.session.add(post)
-        db.session.commit()
+        save(post)
         flash('Your post is now live!')
         return redirect(url_for('index'))
     if g.user.sort_prefs == 'new':
@@ -41,16 +40,14 @@ def index(page=1):
 @app.route('/hot')
 def hot():
     g.user.sort_prefs = 'hot'
-    db.session.add(g.user)
-    db.session.commit()
+    save(g.user)
     flash('Your changes have been saved.')
     return redirect(url_for('index'))
 
 @app.route('/new')
 def new():
     g.user.sort_prefs = 'new'
-    db.session.add(g.user)
-    db.session.commit()
+    save(g.user)
     flash('Your changes have been saved.')
     return redirect(url_for('index'))
 
@@ -83,10 +80,11 @@ def comments(title, page=1):
         flash('Thread %s not found.' % title)
         return redirect(url_for('index'))
 
+
     if cform.validate_on_submit():
         comment = Comment(body=cform.comment.data, date_created=datetime.utcnow(), owner=g.user, poster=thread)
-        db.session.add(comment)
-        db.session.commit()
+        save(comment)
+
         flash('Your post is now live!')
         return redirect(url_for('comments', title=title))
 
@@ -105,8 +103,7 @@ def edit():
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
-        db.session.add(g.user)
-        db.session.commit()
+        save(g.user)
         flash('Your changes have been saved.')
         return redirect(url_for('edit'))
     else:
@@ -120,7 +117,7 @@ def edit_post(id):
     pform = PostForm()
     eform = EditPostForm()
     post = Post.query.get(id)
-    page = 1
+    
     if post is None:
         flash('Post not found.')
         return redirect(url_for('index'))
@@ -139,16 +136,8 @@ def edit_post(id):
         eform.body.data = post.title
         print("error")
 
-    if g.user.sort_prefs == 'new':
-        posts = Post.query.order_by(Post.date_created.desc()).paginate(page, POSTS_PER_PAGE, False)
-    else:
-        posts = Post.query.order_by(Post.vote_count.desc()).paginate(page, POSTS_PER_PAGE, False)
 
-    return render_template('index.html', 
-                            title='Home', 
-                            pform=pform,
-                            eform=eform,
-                            posts=posts)
+    return redirect(url_for('index'))
 
 @app.route('/edit/comment/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -176,7 +165,7 @@ def edit_comment(id):
 
     return redirect(url_for('comments', title=comment.poster.title))
 
-@app.route('/delete/post/<int:id>')
+@app.route('/delete/post/<int:id>', methods=['POST'])
 @login_required
 def delete_post(id):
     post = Post.query.get(id)
@@ -186,27 +175,25 @@ def delete_post(id):
     if post.author.id != g.user.id:
         flash('You cannot delete this post.')
         return redirect(url_for('index'))
-    db.session.delete(post)
-    db.session.commit()
+    delete(post)
     flash('Your post has been deleted.')
     return redirect(url_for('index'))
 
-@app.route('/delete/comment/<int:id>')
+@app.route('/delete/comment/<int:id>', methods=['POST'])
 @login_required
 def delete_comment(id):
     comment = Comment.query.get(id)
-    print(comment.poster.title)
-    print(dir(comment.poster))
+    title = comment.poster.title
+    
     if comment is None:
         flash('Comment not found.')
-        return redirect(url_for('comments', title=comment.poster.title))
+        return redirect(url_for('comments', title=title))
     if comment.owner.id != g.user.id:
         flash('You cannot delete this post.')
-        return redirect(url_for('comments', title=comment.poster.title))
-    db.session.delete(comment)
-    db.session.commit()
+        return redirect(url_for('comments', title=title))
+    delete(comment)
     flash('Your comment has been deleted.')
-    return redirect(url_for('comments', title=comment.poster.title))
+    return redirect(url_for('comments', title=title))
 
 @app.route('/upvote/<title>')
 @login_required
@@ -220,11 +207,10 @@ def upvote(title):
     if u is None:
         flash('Cannot upvote ' + title + '.')
         return redirect(url_for('index'))
-    db.session.add(u)
-    
+    save(u)
+
     post.vote_count =  post.upvotes.count()
-    db.session.add(post)
-    db.session.commit()
+    save(post)
     flash('You have now upvoted ' + title + '!')
     return redirect(url_for('index'))
 
@@ -240,11 +226,10 @@ def downvote(title):
     if u is None:
         flash('Cannot downvote ' + title + '.')
         return redirect(url_for('index'))
-    db.session.add(u)
+    save(u)
 
     post.vote_count =  post.upvotes.count()
-    db.session.add(post)
-    db.session.commit()
+    save(post)
     flash('You have downvoted ' + title + '.')
     return redirect(url_for('index'))
 
@@ -272,8 +257,7 @@ def oauth_callback(provider):
     user = User.query.filter_by(social_id=social_id).first()
     if not user:
         user = User(social_id=social_id, nickname=username, email=email)
-        db.session.add(user)
-        db.session.commit()
+        save(user)
     login_user(user, True)
     return redirect(url_for('index'))
 

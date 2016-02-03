@@ -1,3 +1,13 @@
+<style>
+.hidden{
+    display:none;
+}
+
+.unhidden{
+    display:block;
+}
+</style>
+
 <html>
   <head>
     {% if title %}
@@ -28,3 +38,43 @@
     {% block content %}{% endblock %}
   </body>
 </html>
+
+<script type="text/javascript">
+    var container = "fcontainer"; //set the class name of containers here
+
+    function findParentNode(cname, childObj) {
+        var testObj = childObj.parentNode;
+        var count = 1;
+        while(testObj.className != cname) {
+            testObj = testObj.parentNode;
+        }
+        return testObj;
+    }
+        //  ^ taga hanap nung container na may class na "fcontainer"
+        // tapos yung nasa baba the same, after makita yung pinaka container nila find nalang yung about or link then add yung hide or unhide
+
+    function unhide(className, current_obj) {
+        // var item = current_obj.parentNode.parentNode.getElementsByClassName(className)[0];
+        var item = findParentNode(container, current_obj).getElementsByClassName(className)[0];
+
+        if (item) {
+            if (item.className == 'about hidden') {
+                item.className = 'about unhidden';
+                // hide the edit button 
+                current_obj.parentNode.className = 'link hidden';
+            } else {
+                item.className = 'about hidden';
+                // show the edit button
+                findParentNode(container, current_obj).getElementsByClassName("link")[0].className = 'link unhidden';
+            }
+        }
+    }
+
+    var buttons = document.getElementsByClassName('unhide_button');
+    for (var i = 0; buttons.length > i; i++) {
+        buttons[i].onclick = function(){
+            unhide("about", this);
+        }
+    }
+
+</script>
