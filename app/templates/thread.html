@@ -4,14 +4,14 @@
 {% block content %}
 
         <h1>{{ thread.title }}</h1>
-		<form action="" method="post" name="post">
-      		{{ form.hidden_tag() }}
+		<form action="{{ url_for('comments', title=thread.title) }}" method="post" name="comment">
+      		{{ cform.hidden_tag() }}
       	<table>
         	<tr>
              	<td>Comment:</td>
-              	<td>{{ form.comment(size=30, maxlength=140) }}</td>
+              	<td>{{ cform.comment(size=30, maxlength=140) }}</td>
               	<td>
-              	{% for error in form.comment.errors %}
+              	{% for error in cform.comment.errors %}
               	<span style="color: red;">[{{ error }}]</span><br>
               	{% endfor %}
               	</td>

@@ -76,15 +76,15 @@ def user(nickname, page=1):
 @login_required
 def comments(title, page=1):
     thread = Post.query.filter_by(title=title).first()
-    form = CommentForm()
+    cform = CommentForm()
+    eform = EditPostForm()
 
     if thread == None:
         flash('Thread %s not found.' % title)
         return redirect(url_for('index'))
 
-
-    if form.validate_on_submit():
-        comment = Comment(body=form.comment.data, date_created=datetime.utcnow(), owner=g.user, poster=thread)
+    if cform.validate_on_submit():
+        comment = Comment(body=cform.comment.data, date_created=datetime.utcnow(), owner=g.user, poster=thread)
         db.session.add(comment)
         db.session.commit()
         flash('Your post is now live!')
@@ -94,7 +94,8 @@ def comments(title, page=1):
     return render_template('thread.html',
                             title=thread.title,
                             thread=thread,
-                            form = form,
+                            cform = cform,
+                            eform = eform,
                             comments=comments)
 
 @app.route('/edit', methods=['GET', 'POST'])
@@ -148,6 +149,32 @@ def edit_post(id):
                             pform=pform,
                             eform=eform,
                             posts=posts)
+
+@app.route('/edit/comment/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_comment(id):
+    cform = CommentForm()
+    eform = EditPostForm()
+    comment = Comment.query.get(id)
+    
+    if comment is None:
+        flash('Comment not found.')
+        return redirect(url_for('comments', title=comment.poster.title))
+    if comment.owner.id != g.user.id:
+        flash('You cannot delete this post.')
+        return redirect(url_for('comments', title=comment.poster.title))
+
+    if eform.validate_on_submit():
+        comment.body = eform.body.data
+        db.session.add(comment)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('comments', title=comment.poster.title))
+    else:
+        eform.body.data = comment.body
+
+
+    return redirect(url_for('comments', title=comment.poster.title))
 
 @app.route('/delete/post/<int:id>')
 @login_required

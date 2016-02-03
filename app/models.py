@@ -59,6 +59,7 @@ class User(UserMixin, db.Model):
         return self.liked.filter(upvotes.c.thread_id == post.id).count() > 0
 
 class Comment(db.Model):
+    
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     date_created = db.Column(db.DateTime)

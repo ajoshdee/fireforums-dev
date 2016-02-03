@@ -1,3 +1,21 @@
+<style>
+.hidden{
+    display:none;
+}
+
+.unhidden{
+    display:block;
+}
+</style>
+<script type="text/javascript">
+    function unhide(divID, otherDivId) {
+    var item = document.getElementById(divID);
+    if (item) {
+            item.className=(item.className=='hidden')?'unhidden':'hidden';
+        }
+        document.getElementById(otherDivId).className = 'hidden';
+    }
+</script>
 <table>
     <tr valign="top">
         <td><img src="{{ comment.owner.avatar(70) }}"> <br>
@@ -10,6 +28,27 @@
         	</p>
         	{% if comment.owner.id == g.user.id %}
 			<div><a href="{{ url_for('delete_comment', id=comment.id) }}">{{ ('Delete') }}</a></div>
+            <div id="link"><a href="javascript:unhide('{{ comment.id }}', this)" class="button">{{ ('Edit') }}</a></div>
+            <div id="{{ comment.id }}" class="hidden">
+                <form action="{{ url_for('edit_comment', id=comment.id) }}" method="post" name="edit">
+                    {{ eform.hidden_tag() }}
+                    <table>
+                    <tr>
+                        <td>{{ eform.body(size=30, maxlength=140) }}</td>
+                        <td>
+                        {% for error in eform.body.errors %}
+                            <span style="color: red;">[{{ error }}]</span><br>
+                        {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                    
+                    <td><input type="submit" value="Save Changes"><input type="button" onclick="unhide('link', '{{ comment.id }}') " value="Cancel"></td>
+                    <td></td>
+                    </tr>
+                    </table>
+                </form>
+            </div>
 			{% endif %}
         </td>
     </tr>
