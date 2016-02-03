@@ -50,11 +50,8 @@
         }
         return testObj;
     }
-        //  ^ taga hanap nung container na may class na "fcontainer"
-        // tapos yung nasa baba the same, after makita yung pinaka container nila find nalang yung about or link then add yung hide or unhide
 
     function unhide(className, current_obj) {
-        // var item = current_obj.parentNode.parentNode.getElementsByClassName(className)[0];
         var item = findParentNode(container, current_obj).getElementsByClassName(className)[0];
 
         if (item) {
@@ -76,5 +73,4 @@
             unhide("about", this);
         }
     }
-
 </script>
