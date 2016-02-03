@@ -53,9 +53,6 @@ def new():
 
 @app.route('/login')
 def login():
-    if session.get('logged_in'):
-        return redirect(url_for('index'))
-
     return render_template('login.html', title='Sign In')
 
 @app.route('/user/<nickname>')
