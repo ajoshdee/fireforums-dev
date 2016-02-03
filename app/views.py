@@ -53,6 +53,9 @@ def new():
 
 @app.route('/login')
 def login():
+    if session.get('logged_in'):
+        return redirect(url_for('index'))
+
     return render_template('login.html', title='Sign In')
 
 @app.route('/user/<nickname>')
@@ -127,8 +130,7 @@ def edit_post(id):
 
     if eform.validate_on_submit():
         post.title = eform.body.data
-        db.session.add(post)
-        db.session.commit()
+        save(post)
         flash('Your changes have been saved.')
         print("success")
         return redirect(url_for('index'))
@@ -155,8 +157,7 @@ def edit_comment(id):
 
     if eform.validate_on_submit():
         comment.body = eform.body.data
-        db.session.add(comment)
-        db.session.commit()
+        save(comment)
         flash('Your changes have been saved.')
         return redirect(url_for('comments', title=comment.poster.title))
     else:
