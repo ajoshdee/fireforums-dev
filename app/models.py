@@ -1,6 +1,7 @@
 from app import db
 from flask.ext.login import UserMixin
 from hashlib import md5
+import re
 
 upvotes = db.Table('upvotes',
     db.Column('thread_id', db.Integer, db.ForeignKey('post.id')),
@@ -60,11 +61,27 @@ class User(UserMixin, db.Model):
             self.liked.remove(post)
             return self
 
-    def __repr__(self):
-        return '<User %r>' % (self.nickname)
-
     def is_liked(self, post):
         return self.liked.filter(upvotes.c.thread_id == post.id).count() > 0
+
+    @staticmethod
+    def make_unique_nickname(nickname):
+        if User.query.filter_by(nickname=nickname).first() is None:
+            return nickname
+        version = 2
+        while True:
+            new_nickname = nickname + str(version)
+            if User.query.filter_by(nickname=new_nickname).first() is None:
+                break
+            version += 1
+        return new_nickname
+
+    @staticmethod
+    def make_valid_nickname(nickname):
+        return re.sub('[^a-zA-Z0-9_\.]', '', nickname)
+
+    def __repr__(self):
+        return '<User %r>' % (self.nickname)
 
 class Comment(db.Model):
     
