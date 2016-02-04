@@ -26,7 +26,7 @@
                     {{ eform.hidden_tag() }}
                     <table>
                     <tr>
-                        <td>{{ eform.body(size=30, maxlength=140, ycols=32, rows=4) }}</td>
+                        <td>{{ eform.body(size=30, maxlength=140, cols=32, rows=4) }}</td>
                         <td>
                         {% for error in eform.body.errors %}
                             <span style="color: red;">[{{ error }}]</span><br>
