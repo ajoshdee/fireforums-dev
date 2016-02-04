@@ -16,6 +16,6 @@
     {% for post in posts.items %}
       {% include 'post.html' %}
     {% endfor %}
-    {% if posts.has_prev %}<a href="{{ url_for('user', nickname=user.nickname, page=posts.prev_num) }}">&lt;&lt; Prev</a>{% else %}&lt;&lt; Prev %} | 
+    {% if posts.has_prev %}<a href="{{ url_for('user', nickname=user.nickname, page=posts.prev_num) }}">&lt;&lt; Prev</a>{% else %}&lt;&lt; Prev{% endif %} | 
     {% if posts.has_next %}<a href="{{ url_for('user', nickname=user.nickname, page=posts.next_num) }}">Next &gt;&gt;</a>{% else %}Next &gt;&gt;{% endif %}
 {% endblock %}
