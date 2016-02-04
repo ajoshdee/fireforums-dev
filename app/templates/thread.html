@@ -28,6 +28,6 @@
     	{% include 'comment.html' %}
   	</p>
   	{% endfor %}
-  	{% if comments.has_prev %}<a href="{{ url_for('comments', title=thread.title , page=comments.prev_num) }}">&lt;&lt; Back</a>{% else %}&lt;&lt; Back{% endif %} | 
+  	{% if comments.has_prev %}<a href="{{ url_for('comments', title=thread.title , page=comments.prev_num) }}">&lt;&lt; Prev</a>{% else %}&lt;&lt; Prev{% endif %} | 
 	{% if comments.has_next %}<a href="{{ url_for('comments', title=thread.title, page=comments.next_num) }}">Next &gt;&gt;</a>{% else %}Next &gt;&gt;{% endif %}
 {% endblock %}
