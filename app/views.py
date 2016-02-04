@@ -60,13 +60,14 @@ def login():
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
+    eform = EditPostForm()
     if user == None:
         flash('User %s not found.' % nickname)
         return redirect(url_for('index'))
 
     posts = user.posts.order_by(Post.date_created.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('user.html',
-                           user=user, posts=posts)
+                           user=user, posts=posts, eform=eform)
 
 @app.route('/comments/<title>', methods=['GET', 'POST'])
 @app.route('/comments/<title>/<int:page>', methods=['GET', 'POST'])
