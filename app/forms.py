@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Length
 from app.models import User
 
 class EditForm(Form):
-    nickname = StringField('nickname', validators=[DataRequired()])
+    nickname = StringField('nickname', validators=[DataRequired(), Length(min=0, max=64)])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
 
     def __init__(self, original_nickname, *args, **kwargs):
