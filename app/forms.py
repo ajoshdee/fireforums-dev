@@ -26,10 +26,10 @@ class EditForm(Form):
         return True
     
 class EditPostForm(Form):
-    body = TextAreaField('body', validators=[Length(min=1, max=140)])
+    body = TextAreaField('body', validators=[DataRequired() , Length(min=0, max=140)])
 
 class PostForm(Form):
-    post = StringField('post', validators=[DataRequired()])
+    post = StringField('post', validators=[DataRequired() , Length(min=0, max=140)])
 
 class CommentForm(Form):
-    comment = StringField('body', validators=[DataRequired()])
+    comment = StringField('body', validators=[DataRequired() , Length(min=0, max=140)])
