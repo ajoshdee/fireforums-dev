@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, flash, g
+from flask import Flask, redirect, url_for, render_template, flash, g, request
 from app import app, lm, db
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .facebook import OAuthSignIn
@@ -22,6 +22,9 @@ def before_request():
 def index(page=1):
     pform = PostForm()
     eform = EditPostForm()
+    
+    print(request.args.get('error'))
+    
     if pform.validate_on_submit():
         post = Post(title=pform.post.data, date_created=datetime.utcnow(), author=g.user)
         save(post)
@@ -41,14 +44,14 @@ def index(page=1):
 def hot():
     g.user.sort_prefs = 'hot'
     save(g.user)
-    flash('Your changes have been saved.')
+    flash('Posts are now sorted by hot')
     return redirect(url_for('index'))
 
 @app.route('/new')
 def new():
     g.user.sort_prefs = 'new'
     save(g.user)
-    flash('Your changes have been saved.')
+    flash('Posts are now sorted by new')
     return redirect(url_for('index'))
 
 @app.route('/login')
@@ -137,8 +140,7 @@ def edit_post(id):
         return redirect(url_for('index'))
     else:
         eform.body.data = post.title
-        print("error")
-
+        flash(eform.body.errors[0])
 
     return redirect(url_for('index'))
 
@@ -163,7 +165,7 @@ def edit_comment(id):
         return redirect(url_for('comments', title=comment.poster.title))
     else:
         eform.body.data = comment.body
-
+        flash(eform.body.errors[0])
 
     return redirect(url_for('comments', title=comment.poster.title))
 

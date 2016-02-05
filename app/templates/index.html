@@ -1,9 +1,12 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
-
-{% block content %}
-
+{% import "bootstrap/wtf.html" as wtf %}
+{% block page_content %}
+      
         <h1>Hi, {{ g.user.nickname }}!</h1>
+        {% if error %}
+        {{ error }}
+        {% endif %}
 		<form action="{{ url_for('index') }}" method="post" name="post">
       		{{ pform.hidden_tag() }}
       	<table>
@@ -33,4 +36,4 @@
 	{% if posts.has_next %}<a href="{{ url_for('index', page=posts.next_num) }}">Next &gt;&gt;</a>{% else %}Next &gt;&gt;{% endif %}
 {% endblock %}
        
-            
+          

@@ -4,7 +4,7 @@
         	<a href="{{url_for('user', nickname=comment.owner.nickname)}}">{{ comment.owner.nickname }}</a>
         </td>
         <td>
-        	<p>{{ momentjs(comment.date_created).fromNow() }}:
+        	<p>{{ moment(comment.date_created).fromNow() }}:
         	</p> 
         	<p><strong>{{ comment.body }}</strong>
         	</p>

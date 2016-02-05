@@ -1,7 +1,7 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 
-{% block content %}
+{% block page_content %}
 
         <h1>{{ thread.title }}</h1>
 		<form action="{{ url_for('comments', title=thread.title) }}" method="post" name="comment">

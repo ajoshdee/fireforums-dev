@@ -8,6 +8,13 @@
 }
 </style>
 
+{% extends "bootstrap/base.html" %}
+{% block title %}{% if title %}
+    {{ title }} - Fire Forums</title>
+    {% else %}
+    Welcome to Fire Forums</title>
+    {% endif %}
+{% endblock %}
 <html>
   <head>
     {% if title %}
@@ -17,7 +24,7 @@
     {% endif %}
     <script src="/static/js/moment.min.js"></script>
   </head>
-  <body>
+  {% block navbar %}
     <div>Fire Forums:
         <a href="{{ url_for('index') }}">Home</a>
         {% if g.user.is_authenticated %}
@@ -25,19 +32,26 @@
         | <a href="{{ url_for('logout') }}">Logout</a>
         {% endif %}
     </div>
-    <hr>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-    {% for message in messages %}
-        <li>{{ message }} </li>
+{% endblock %}
+    
+    {% block content %}
+    <div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
     {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
+
+    {% block page_content %}{% endblock %}
+</div>
+    {% endblock %}
   </body>
 </html>
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
 
 <script type="text/javascript">
     var container = "fcontainer"; //set the class name of containers here
@@ -74,3 +88,5 @@
         }
     }
 </script>
+
+{% endblock %}
