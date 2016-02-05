@@ -54,7 +54,7 @@ class User(UserMixin, db.Model):
             self.liked.append(post)
             return self
         else:
-            return print('hello')
+            return self
 
     def downvote(self, post):
         if self.is_liked(post):
