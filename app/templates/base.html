@@ -1,0 +1,92 @@
+<style>
+.hidden{
+    display:none;
+}
+
+.unhidden{
+    display:block;
+}
+</style>
+
+{% extends "bootstrap/base.html" %}
+{% block title %}{% if title %}
+    {{ title }} - Fire Forums</title>
+    {% else %}
+    Welcome to Fire Forums</title>
+    {% endif %}
+{% endblock %}
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} - Fire Forums</title>
+    {% else %}
+    <title>Welcome to Fire Forums</title>
+    {% endif %}
+    <script src="/static/js/moment.min.js"></script>
+  </head>
+  {% block navbar %}
+    <div>Fire Forums:
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if g.user.is_authenticated %}
+        | <a href="{{ url_for('user', nickname=g.user.nickname) }}">Your Profile</a>
+        | <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+    </div>
+{% endblock %}
+    
+    {% block content %}
+    <div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% block page_content %}{% endblock %}
+</div>
+    {% endblock %}
+  </body>
+</html>
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+
+<script type="text/javascript">
+    var container = "fcontainer"; //set the class name of containers here
+
+    function findParentNode(cname, childObj) {
+        var testObj = childObj.parentNode;
+        var count = 1;
+        while(testObj.className != cname) {
+            testObj = testObj.parentNode;
+        }
+        return testObj;
+    }
+
+    function unhide(className, current_obj) {
+        var item = findParentNode(container, current_obj).getElementsByClassName(className)[0];
+
+        if (item) {
+            if (item.className == 'about hidden') {
+                item.className = 'about unhidden';
+                // hide the edit button 
+                current_obj.parentNode.className = 'link hidden';
+            } else {
+                item.className = 'about hidden';
+                // show the edit button
+                findParentNode(container, current_obj).getElementsByClassName("link")[0].className = 'link unhidden';
+            }
+        }
+    }
+
+    var buttons = document.getElementsByClassName('unhide_button');
+    for (var i = 0; buttons.length > i; i++) {
+        buttons[i].onclick = function(){
+            unhide("about", this);
+        }
+    }
+</script>
+
+{% endblock %}

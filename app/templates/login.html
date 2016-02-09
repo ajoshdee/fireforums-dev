@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block page_content %}
+        <h1>Please Sign In</h1>
+        <p><a href="{{ url_for('oauth_authorize', provider='facebook') }}">Login with Facebook</a></p>
+{% endblock %}

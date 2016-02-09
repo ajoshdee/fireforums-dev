@@ -1,0 +1,50 @@
+<table>
+    <tr valign="top">
+        {{ post.upvotes.count() }}
+        {% if not g.user.is_liked(post) %}
+            <a href="{{ url_for('upvote', title=post.title) }}">Upvote</a>
+        {% else %}
+            <a href="{{ url_for('downvote', title=post.title) }}">Downvote</a>
+        {% endif %}
+        <td><img src="{{ post.author.avatar(70) }}"> <br>
+        	<a href="{{url_for('user', nickname=post.author.nickname)}}">{{ post.author.nickname }}</a>
+        </td>
+        <td>
+        	<p>{{ moment(post.date_created).fromNow() }}:
+        	</p> 
+        	<p><strong>{{ post.title }}</strong><br>
+        	<a href="{{ url_for('comments', title=post.title) }}">Comments</a>
+        	</p>
+        	{% if post.author.id == g.user.id %}
+			<div><form method="post" action="{{ url_for('delete_post', id=post.id) }}">
+            <button type="submit">Delete</button>
+            </form></div>
+            <div class=fcontainer>
+            <div id="link"><a href="#" class="unhide_button button">{{ ('Edit') }}</a></div>
+            <div class="about hidden">
+                <form action="{{ url_for('edit_post', id=post.id) }}" method="post" name="edit">
+                    {{ eform.hidden_tag() }}
+                    <table>
+                    <tr>
+                        <td>{{ eform.body(size=30, maxlength=140, cols=32, rows=4) }}</td>
+                        <td>
+                        {% for error in eform.body.errors %}
+                            <span style="color: red;">[{{ error }}]</span><br>
+                        {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                    
+                    <td><input type="submit" value="Save Changes"><input type="button" class="unhide_button button" value="Cancel"></td>
+                    <td></td>
+                    </tr>
+                    </table>
+                </form>
+            </div>
+            </div>
+			{% endif %}
+        </td>
+
+    </tr>
+</table>
+

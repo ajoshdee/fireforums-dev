@@ -1,0 +1,39 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block page_content %}
+      
+        <h1>Hi, {{ g.user.nickname }}!</h1>
+        {% if error %}
+        {{ error }}
+        {% endif %}
+		<form action="{{ url_for('index') }}" method="post" name="post">
+      		{{ pform.hidden_tag() }}
+      	<table>
+          <tr><a href="{{ url_for('new') }}">New</a> | <a href="{{ url_for('hot') }}">Hot</a></tr>
+        	<tr>
+             	<td>Say something:</td>
+              	<td>{{ pform.post(size=30, maxlength=140) }}</td>
+              	<td>
+              	{% for error in pform.post.errors %}
+              	<span style="color: red;">[{{ error }}]</span><br>
+              	{% endfor %}
+              	</td>
+          	</tr>
+          	<tr>
+              	<td></td>
+              	<td><input type="submit" value="Post!"></td>
+              	<td></td>
+          	</tr>
+      	</table>
+  	</form>
+  	{% for post in posts.items %}
+  	<p>
+    	{% include 'post.html' %}
+  	</p>
+  	{% endfor %}
+  	{% if posts.has_prev %}<a href="{{ url_for('index', page=posts.prev_num) }}">&lt;&lt; Prev</a>{% else %}&lt;&lt; Prev{% endif %} | 
+	{% if posts.has_next %}<a href="{{ url_for('index', page=posts.next_num) }}">Next &gt;&gt;</a>{% else %}Next &gt;&gt;{% endif %}
+{% endblock %}
+       
+          
